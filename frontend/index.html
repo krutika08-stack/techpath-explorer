@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TechPath Explorer — Technology Roadmap Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,6 +14,7 @@
   <!-- NAVBAR -->
   <header>
     <div class="logo-group" onclick="showView('landing')">
+      <img class="logo-img" src="logo-icon.png" alt="" />
       <strong>TechPath <span class="highlight">Explorer</span></strong>
       <span class="badge">MVP v1.0</span>
     </div>
@@ -24,13 +28,16 @@
 
     <!-- VIEW 1: LANDING PAGE -->
     <section id="landingView">
-      <div class="hero">
+      <div class="hero hero-split">
+        <img class="hero-logo" src="logo.png" alt="Tech Path Explorer - Guiding future innovation" />
+        <div class="hero-text">
         <span class="badge">Evidence-Backed Roadmap Engine</span>
         <h1>Turn Your Project Idea Into a <span class="highlight">Technology Roadmap.</span></h1>
         <p class="hero-desc">
           Stop guessing which framework, database, or AI model to use. Get constraint-aware tech recommendations and an explainable architecture plan.
         </p>
         <button class="btn btn-large" onclick="showView('analyzer')">Explore Your Project &rarr;</button>
+        </div>
       </div>
 
       <div class="grid-3">
