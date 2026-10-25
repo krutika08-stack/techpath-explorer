@@ -1,0 +1,132 @@
+{
+  "id": "gemini-api",
+  "name": "Google Gemini API",
+  "type": "ai",
+  "category": "cloud_llm_api",
+  "purpose": "A cloud API that allows applications to use Google's Gemini AI models for text generation and multimodal tasks.",
+  "capabilities": [
+    "text generation",
+    "multimodal input",
+    "image understanding",
+    "summarisation",
+    "embeddings",
+    "audio processing"
+  ],
+  "advantages": [
+    "Free tier available for supported models",
+    "Supports multimodal AI tasks",
+    "Official Python SDK available"
+  ],
+  "limitations": [
+    "Requires an internet connection",
+    "Free-tier usage has restrictions",
+    "Free-tier prompts and responses may be used to improve Google products",
+    "Pricing and model availability can change",
+    "Official terms require users to be at least 18 years old"
+  ],
+  "skill_level": "beginner",
+  "setup_time_hours": 1,
+  "hardware": {
+    "gpu_required": false,
+    "min_ram_gb": null,
+    "internet_required": true,
+    "offline_capable": false,
+    "notes": "The AI model runs as a cloud service. A local GPU is not required for API calls."
+  },
+  "integration": {
+    "methods": [
+      "REST API",
+      "Python SDK (google-genai)"
+    ],
+    "languages": [
+      "python",
+      "javascript"
+    ],
+    "notes": "Requires API access and an API key. Keep the API key secure on the server side."
+  },
+  "pricing": {
+    "model": "free_tier_plus_paid",
+    "free_tier": {
+      "available": true,
+      "restrictions": [
+        "Model availability and rate limits vary",
+        "Usage limits can depend on the project",
+        "Free-tier data-use terms differ from paid-tier terms"
+      ]
+    },
+    "paid_starting_from": null,
+    "budget_tier": "free",
+    "notes": "Exact pricing depends on the model and usage. Check the official pricing page before final submission."
+  },
+  "licence": {
+    "name": "Proprietary service terms; Python SDK licensed separately",
+    "spdx_id": null,
+    "open_source": false,
+    "commercial_use_allowed": null,
+    "notes": "The API service terms and the SDK software licence are separate. Confirm the current terms before finalising."
+  },
+  "access_requirements": {
+    "account_required": true,
+    "api_key_required": true,
+    "payment_method_required": null,
+    "region_restrictions": "Available only in supported regions",
+    "other": "Official Gemini API terms require users to be at least 18 years old."
+  },
+  "recommendation_tags": {
+    "best_for": [
+      "chatbot",
+      "text-summarisation",
+      "multimodal-demo",
+      "AI-prototype"
+    ],
+    "not_ideal_for": [
+      "offline-demo",
+      "applications that must run without internet"
+    ],
+    "pairs_well_with": [
+      "fastapi",
+      "react"
+    ]
+  },
+  "sources": [
+    {
+      "label": "Official pricing",
+      "url": "https://ai.google.dev/gemini-api/docs/pricing",
+      "source_type": "pricing",
+      "accessed_on": "2026-10-25"
+    },
+    {
+      "label": "Official API documentation",
+      "url": "https://ai.google.dev/gemini-api/docs",
+      "source_type": "docs",
+      "accessed_on": "2026-10-25"
+    },
+    {
+      "label": "Gemini API terms",
+      "url": "https://ai.google.dev/gemini-api/terms",
+      "source_type": "licence",
+      "accessed_on": "2026-10-25"
+    },
+    {
+      "label": "Official Python SDK licence",
+      "url": "https://github.com/googleapis/python-genai/blob/main/LICENSE",
+      "source_type": "github",
+      "accessed_on": "2026-10-25"
+    }
+  ],
+  "verification": {
+    "pricing": {
+      "status": "needs_review",
+      "verified_on": null
+    },
+    "licence": {
+      "status": "needs_review",
+      "verified_on": null
+    },
+    "free_tier": {
+      "status": "needs_review",
+      "verified_on": null
+    },
+    "overall_notes": "Draft entry. Confirm the current pricing, licence, usage limits, schema and age restrictions before including this entry in the final dataset."
+  }
+}
