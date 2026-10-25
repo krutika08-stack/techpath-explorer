@@ -122,3 +122,18 @@ body::before { content: ""; position: fixed; inset: -20%; z-index: -2; pointer-e
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Integration additions: API states and recommendation cards ---------- */
+.form-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 .8rem; padding: .75rem .9rem; border-radius: 10px;
+  border: 1px solid rgba(248, 113, 113, .5); background: rgba(248, 113, 113, .1); color: #fca5a5; font-size: .82rem; }
+.btn:disabled { opacity: .7; cursor: wait; transform: none; }
+.rec-list { display: grid; gap: 1rem; margin: .6rem 0 1.2rem; }
+.rec-card { margin-bottom: 0; }
+.rec-card h4 { font-size: 1.15rem; margin: .2rem 0 .1rem; }
+.rec-block { margin-top: .85rem; }
+.rec-block h5 { font: 600 .7rem var(--head); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .25rem; }
+.rec-block ul { padding-left: 1.1rem; font-size: .82rem; color: var(--muted); line-height: 1.7; }
+.rec-meta { margin-top: .9rem; padding-top: .75rem; border-top: 1px solid var(--border); font-size: .8rem; color: var(--muted); display: flex; gap: .5rem 1.5rem; flex-wrap: wrap; }
+.rec-meta b { color: #fff; font-weight: 600; }
+.src-list { list-style: none; display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .8rem; margin-top: .3rem; }
+.src-list a { color: var(--primary-hi); }
