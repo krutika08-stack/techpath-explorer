@@ -1,85 +1,479 @@
 {
-  "id": "google-gemma-4",
-  "name": "Google Gemma 4",
-  "category": "cloud_llm_api",
-  "description": "Google DeepMind's open-weight model family built on Gemini-level research, featuring native multimodal inputs and tool-calling capabilities.",
-  "capabilities": [
-    "text generation",
-    "multimodal input",
-    "native function calling",
-    "system prompt support"
-  ],
-  "advantages": [
-    "Released under OSI-approved Apache 2.0 License",
-    "Native function calling and multi-step reasoning capabilities",
-    "Cloud-hosted inference available via free tiers"
-  ],
-  "limitations": [
-    "Cloud-hosted inference rate limits depend on the chosen third-party provider",
-    "Larger dense variants require cloud GPU acceleration"
-  ],
-  "hardware": {
-    "deployment_type": "cloud",
-    "minimum_ram_gb": "unverified",
-    "recommended_ram_gb": "unverified",
-    "gpu_required": false,
-    "storage_gb": "unverified",
-    "notes": "Intended for cloud-hosted inference; no local weights required."
+  "metadata": {
+    "dataset_version": "0.1.0",
+    "last_updated": "2026-10-26",
+    "compiled_by": "TechPath Explorer Team",
+    "currency_note": "Prices in USD unless stated",
+    "status_legend": {
+      "verified": "Confirmed on an official source on last_checked date",
+      "unverified": "Found only on non-official source or from memory",
+      "needs_review": "Conflicting or unclear information"
+    }
   },
-  "deployment": {
-    "options": [
-      "REST API",
-      "Cloud Provider SDKs"
-    ],
-    "cloud_available": true,
-    "local_available": false,
-    "notes": "Hosted via cloud endpoints and aggregation providers."
-  },
-  "pricing": {
-    "model": "free_tier_plus_paid",
-    "budget_tier": "free",
-    "free_tier_available": true,
-    "paid_starting_from": "unverified",
-    "currency": "USD",
-    "pricing_notes": "Free tier available via providers like Cloudflare Workers AI and OpenRouter; paid pricing is provider-dependent."
-  },
-  "license": {
-    "type": "Apache 2.0",
-    "spdx_id": "Apache-2.0",
-    "commercial_use": "allowed",
-    "restrictions": [],
-    "notes": "OSI-approved open source license verified from official documentation."
-  },
-  "access_requirements": [
-    "Account required",
-    "API key required",
-    "Provider account required for cloud inference"
-  ],
-  "tags": [
-    "agentic-ai",
-    "tool-calling",
-    "cloud-inference",
-    "open-weight"
-  ],
-  "sources": [
+  "technologies": [
     {
-      "label": "Google Gemma Models Overview",
-      "url": "https://deepmind.google/models/gemma/",
-      "source_type": "docs",
-      "last_checked": "2026-10-26"
+      "id": "google-gemma-4",
+      "name": "Google Gemma 4",
+      "category": "cloud_llm_api",
+      "description": "Google DeepMind's open-weight model family built on Gemini-level research, featuring native multimodal inputs and context windows up to 256K tokens.",
+      "capabilities": [
+        "text generation",
+        "multimodal input",
+        "native function calling",
+        "system prompt support"
+      ],
+      "advantages": [
+        "Released under OSI-approved Apache 2.0 License",
+        "Native function calling and multi-step reasoning capabilities",
+        "Flexible model variants (E2B, E4B, 12B, 26B MoE, 31B Dense)"
+      ],
+      "limitations": [
+        "Cloud-hosted inference pricing depends on the chosen third-party provider",
+        "Larger dense variants require cloud GPU acceleration"
+      ],
+      "hardware": {
+        "deployment_type": "cloud",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Intended for cloud-hosted inference."
+      },
+      "deployment": {
+        "options": [
+          "REST API",
+          "Cloud Provider SDKs"
+        ],
+        "cloud_available": true,
+        "local_available": false,
+        "notes": "Hosted via cloud endpoints and aggregation providers."
+      },
+      "pricing": {
+        "model": "usage_based",
+        "budget_tier": "unknown",
+        "free_tier_available": false,
+        "paid_starting_from": null,
+        "currency": "USD",
+        "pricing_notes": "Cloud inference pricing is provider-dependent; zero does not imply free hosted inference."
+      },
+      "license": {
+        "type": "Apache 2.0",
+        "spdx_id": "Apache-2.0",
+        "commercial_use": "allowed",
+        "restrictions": [],
+        "notes": "OSI-approved open source license verified from official model documentation."
+      },
+      "access_requirements": [
+        "Account required",
+        "API key required",
+        "Provider account required for cloud inference"
+      ],
+      "tags": [
+        "agentic-ai",
+        "tool-calling",
+        "cloud-inference"
+      ],
+      "sources": [
+        {
+          "label": "Gemma 4 Model Card",
+          "url": "https://ai.google.dev/gemma/docs/core/model_card_4",
+          "source_type": "docs",
+          "last_checked": "2026-10-26"
+        },
+        {
+          "label": "Google Agentic AI Announcement",
+          "url": "https://developers.googleblog.com/bring-state-of-the-art-agentic-skills-to-the-edge-with-gemma-4/",
+          "source_type": "blog",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "unverified",
+        "overall_notes": "Model identity, variants, capabilities, license, and pricing require verification against current official sources.",
+        "unverified_fields": [
+          "name",
+          "description",
+          "capabilities",
+          "advantages",
+          "license",
+          "pricing.paid_starting_from",
+          "pricing.free_tier_available"
+        ]
+      }
     },
     {
-      "label": "Awesome Free LLM APIs Registry",
-      "url": "https://github.com/mnfst/awesome-free-llm-apis",
-      "source_type": "github",
-      "last_checked": "2026-10-26"
+      "id": "meta-llama-4-scout",
+      "name": "Meta Llama 4 Scout",
+      "category": "cloud_llm_api",
+      "description": "Meta's multimodal Mixture-of-Experts instruction-tuned model designed for text, code, and image understanding with extended context windows.",
+      "capabilities": [
+        "text generation",
+        "multimodal understanding",
+        "function calling",
+        "long context processing"
+      ],
+      "advantages": [
+        "Extended context window up to 10M tokens",
+        "Strong multimodal and chat performance"
+      ],
+      "limitations": [
+        "Custom community license restrictions",
+        "Not OSI-approved open source"
+      ],
+      "hardware": {
+        "deployment_type": "cloud",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Intended for cloud-hosted inference."
+      },
+      "deployment": {
+        "options": [
+          "REST API",
+          "Cloud Provider SDKs"
+        ],
+        "cloud_available": true,
+        "local_available": false,
+        "notes": "Accessed through cloud hosting partners."
+      },
+      "pricing": {
+        "model": "usage_based",
+        "budget_tier": "unknown",
+        "free_tier_available": false,
+        "paid_starting_from": null,
+        "currency": "USD",
+        "pricing_notes": "Provider-dependent pricing; zero does not imply free hosted inference."
+      },
+      "license": {
+        "type": "Llama 4 Community License Agreement",
+        "spdx_id": null,
+        "commercial_use": "unknown",
+        "restrictions": [
+          "Commercial scale restrictions (requires commercial license if monthly active users exceed 700M)",
+          "Restrictions against using outputs to train competing models",
+          "Acceptable use limits"
+        ],
+        "notes": "Custom open-weight license with scale thresholds and acceptable use policies."
+      },
+      "access_requirements": [
+        "Account required",
+        "API key required",
+        "Requires agreement to Meta license terms"
+      ],
+      "tags": [
+        "agentic-ai",
+        "tool-calling",
+        "cloud-inference"
+      ],
+      "sources": [
+        {
+          "label": "Meta Llama Downloads",
+          "url": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/",
+          "source_type": "license",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "unverified",
+        "overall_notes": "Verify the model context window, license restrictions, capabilities, and provider pricing against official sources.",
+        "unverified_fields": [
+          "description",
+          "advantages",
+          "capabilities",
+          "license.restrictions",
+          "pricing.paid_starting_from",
+          "pricing.free_tier_available"
+        ]
+      }
+    },
+    {
+      "id": "hugging-face",
+      "name": "Hugging Face",
+      "category": "model_platform",
+      "description": "Centralized open platform and library suite for discovering, hosting, testing, and deploying machine learning models and datasets.",
+      "capabilities": [
+        "model hosting",
+        "dataset repository",
+        "transformers library",
+        "spaces web hosting"
+      ],
+      "advantages": [
+        "Standardized API across thousands of open models",
+        "Free core repository storage and public CPU Spaces"
+      ],
+      "limitations": [
+        "Varying model quality across community uploads",
+        "Paid compute required for heavy GPU workloads"
+      ],
+      "hardware": {
+        "deployment_type": "cloud",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Cloud ecosystem platform."
+      },
+      "deployment": {
+        "options": [
+          "Python SDK",
+          "REST API"
+        ],
+        "cloud_available": true,
+        "local_available": true,
+        "notes": "Integrates with transformers library and platform APIs."
+      },
+      "pricing": {
+        "model": "free_tier_plus_paid",
+        "budget_tier": "free",
+        "free_tier_available": true,
+        "paid_starting_from": 9.0,
+        "currency": "USD",
+        "pricing_notes": "Core platform and standard features free with small free inference allowance ($0.10/mo); PRO subscription is $9/mo including $2 in monthly inference credits. Advanced GPU compute billed hourly."
+      },
+      "license": {
+        "type": "Mixed (platform libraries and hosted models have separate licenses)",
+        "spdx_id": null,
+        "commercial_use": "unknown",
+        "restrictions": [
+          "Individual libraries and hosted models may use different licenses",
+          "Check the specific model license before commercial use"
+        ],
+        "notes": "No single SPDX license or commercial-use status applies to the entire platform."
+      },
+      "access_requirements": [
+        "Account optional for downloads",
+        "Account required for publishing"
+      ],
+      "tags": [
+        "model-discovery",
+        "prototype-hosting"
+      ],
+      "sources": [
+        {
+          "label": "Hugging Face Docs & Pricing",
+          "url": "https://huggingface.co/docs",
+          "source_type": "docs",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "verified",
+        "overall_notes": "Verified Pro subscription pricing ($9/mo), free tier limits ($0.10/mo credit), and mixed licensing model against official documentation.",
+        "unverified_fields": []
+      }
+    },
+    {
+      "id": "langchain",
+      "name": "LangChain",
+      "category": "orchestration_framework",
+      "description": "Open-source development framework designed to build LLM-powered applications using composable abstractions.",
+      "capabilities": [
+        "prompt management",
+        "document loaders",
+        "vector store integration",
+        "agent execution loops"
+      ],
+      "advantages": [
+        "Reduces boilerplate code for AI workflows",
+        "Extensive ecosystem of tool integrations"
+      ],
+      "limitations": [
+        "Rapid updates can introduce breaking changes",
+        "High abstraction can complicate debugging"
+      ],
+      "hardware": {
+        "deployment_type": "local",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Lightweight Python package."
+      },
+      "deployment": {
+        "options": [
+          "Python Package",
+          "TypeScript Package"
+        ],
+        "cloud_available": true,
+        "local_available": true,
+        "notes": "Integrates with model APIs and vector databases."
+      },
+      "pricing": {
+        "model": "free",
+        "budget_tier": "free",
+        "free_tier_available": true,
+        "paid_starting_from": 0.0,
+        "currency": "USD",
+        "pricing_notes": "Framework is 100% free open source."
+      },
+      "license": {
+        "type": "MIT",
+        "spdx_id": "MIT",
+        "commercial_use": "allowed",
+        "restrictions": [],
+        "notes": "Permissive open source."
+      },
+      "access_requirements": [],
+      "tags": [
+        "rag-applications",
+        "ai-agents"
+      ],
+      "sources": [
+        {
+          "label": "LangChain Docs",
+          "url": "https://docs.langchain.com/",
+          "source_type": "docs",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "verified",
+        "overall_notes": "Verified MIT license and open-source status.",
+        "unverified_fields": []
+      }
+    },
+    {
+      "id": "fastapi",
+      "name": "FastAPI",
+      "category": "web_framework",
+      "description": "Modern, high-performance Python web framework for building REST APIs with standard Python type hints.",
+      "capabilities": [
+        "asynchronous request handling",
+        "automatic swagger documentation",
+        "pydantic data validation"
+      ],
+      "advantages": [
+        "High performance comparable to Node.js and Go",
+        "Intuitive auto-completion and automatic documentation"
+      ],
+      "limitations": [
+        "Requires understanding of async/await programming"
+      ],
+      "hardware": {
+        "deployment_type": "local",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Runs on standard CPU server hardware."
+      },
+      "deployment": {
+        "options": [
+          "Python ASGI Server"
+        ],
+        "cloud_available": true,
+        "local_available": true,
+        "notes": "Pairs seamlessly with Uvicorn."
+      },
+      "pricing": {
+        "model": "free",
+        "budget_tier": "free",
+        "free_tier_available": true,
+        "paid_starting_from": 0.0,
+        "currency": "USD",
+        "pricing_notes": "100% free open source."
+      },
+      "license": {
+        "type": "MIT",
+        "spdx_id": "MIT",
+        "commercial_use": "allowed",
+        "restrictions": [],
+        "notes": "Permissive open source."
+      },
+      "access_requirements": [],
+      "tags": [
+        "rest-apis",
+        "backend-services"
+      ],
+      "sources": [
+        {
+          "label": "FastAPI Docs",
+          "url": "https://fastapi.tiangolo.com/",
+          "source_type": "docs",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "unverified",
+        "overall_notes": "FastAPI license and web framework capabilities require verification against official sources.",
+        "unverified_fields": [
+          "license",
+          "capabilities"
+        ]
+      }
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "category": "database",
+      "description": "Enterprise-grade open-source object-relational database management system supporting structured SQL and vector embeddings.",
+      "capabilities": [
+        "acid compliance",
+        "complex sql querying",
+        "jsonb document support",
+        "pgvector similarity search"
+      ],
+      "advantages": [
+        "Reliable production-grade relational storage",
+        "Vector search capabilities via pgvector for RAG"
+      ],
+      "limitations": [
+        "Higher setup and operational overhead than SQLite"
+      ],
+      "hardware": {
+        "deployment_type": "local",
+        "minimum_ram_gb": null,
+        "recommended_ram_gb": null,
+        "gpu_required": false,
+        "storage_gb": null,
+        "notes": "Self-hostable or cloud managed."
+      },
+      "deployment": {
+        "options": [
+          "SQL Connection",
+          "ORMs"
+        ],
+        "cloud_available": true,
+        "local_available": true,
+        "notes": "Integrates with all major backend frameworks."
+      },
+      "pricing": {
+        "model": "open_source_free",
+        "budget_tier": "free",
+        "free_tier_available": true,
+        "paid_starting_from": 0.0,
+        "currency": "USD",
+        "pricing_notes": "Free to self-host; managed cloud services have paid tiers."
+      },
+      "license": {
+        "type": "PostgreSQL License",
+        "spdx_id": "PostgreSQL",
+        "commercial_use": "allowed",
+        "restrictions": [],
+        "notes": "Permissive open-source license."
+      },
+      "access_requirements": [],
+      "tags": [
+        "relational-data",
+        "vector-storage"
+      ],
+      "sources": [
+        {
+          "label": "PostgreSQL Docs",
+          "url": "https://www.postgresql.org/docs/",
+          "source_type": "docs",
+          "last_checked": "2026-10-26"
+        }
+      ],
+      "verification": {
+        "status": "unverified",
+        "overall_notes": "PostgreSQL licensing and database capabilities require verification against official sources.",
+        "unverified_fields": [
+          "license",
+          "capabilities"
+        ]
+      }
     }
-  ],
-  "verification": {
-    "status": "verified",
-    "overall_notes": "Model identity, Apache 2.0 open-weight license, capabilities, and cloud availability verified against official documentation.",
-    "unverified_fields": [
-      "pricing.paid_starting_from"
-    ]
-  }
+  ]
 }
