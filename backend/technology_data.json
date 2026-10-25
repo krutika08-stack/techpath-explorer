@@ -1,1 +1,112 @@
 {
+  "id": "gemini-api",
+  "name": "Google Gemini API",
+  "type": "ai",
+  "category": "cloud_llm_api",
+  "purpose": "Cloud API for Google's Gemini models covering text, multimodal input, image and speech generation, transcription and live voice.",
+  "capabilities": [
+    "text generation",
+    "multimodal input",
+    "image generation",
+    "speech generation",
+    "transcription",
+    "embeddings",
+    "search grounding",
+    "batch processing"
+  ],
+  "advantages": [
+    "Free tier available (model-limited)",
+    "Low-cost Flash-Lite models",
+    "Official Python and JavaScript SDKs under Apache-2.0"
+  ],
+  "limitations": [
+    "Free-tier content may be used to improve Google products and read by human reviewers",
+    "Free-tier numeric limits not published in docs",
+    "Minimum age 18",
+    "Flagship models not on free tier"
+  ],
+  "skill_level": "beginner",
+  "setup_time_hours": 1,
+  "hardware": {
+    "gpu_required": false,
+    "min_ram_gb": null,
+    "internet_required": true,
+    "offline_capable": false,
+    "notes": "Cloud service."
+  },
+  "integration": {
+    "methods": [
+      "Python SDK (google-genai)",
+      "REST API"
+    ],
+    "languages": [
+      "python",
+      "javascript"
+    ],
+    "notes": "FastAPI: call the SDK from a server-side endpoint; keep the key out of client code."
+  },
+  "pricing": {
+    "model": "free_tier_plus_paid",
+    "free_tier": {
+      "available": true,
+      "restrictions": [
+        "Model-limited",
+        "Per-project rate limits visible only in AI Studio",
+        "Prompts and responses may be used to improve products"
+      ]
+    },
+    "paid_starting_from": 0.25,
+    "budget_tier": "free",
+    "notes": "paid_starting_from = USD per 1M input tokens, Gemini 3.1 Flash-Lite."
+  },
+  "licence": {
+    "name": "Proprietary (Google API Terms + Gemini API Additional Terms); SDK Apache-2.0",
+    "spdx_id": null,
+    "open_source": false,
+    "commercial_use_allowed": null,
+    "notes": ""
+  },
+  "access_requirements": {
+    "account_required": true,
+    "api_key_required": true,
+    "payment_method_required": false,
+    "region_restrictions": null,
+    "other": "Minimum age 18+"
+  },
+  "recommendation_tags": {
+    "best_for": [
+      "chatbot",
+      "text-summarisation"
+    ],
+    "not_ideal_for": [
+      "offline-demo"
+    ],
+    "pairs_well_with": [
+      "fastapi",
+      "react"
+    ]
+  },
+  "sources": [
+    {
+      "label": "Google AI Developer Models Documentation",
+      "url": "https://ai.google.dev/gemini-api/docs/models",
+      "source_type": "docs",
+      "accessed_on": "2026-10-25"
+    }
+  ],
+  "verification": {
+    "pricing": {
+      "status": "verified",
+      "verified_on": "2026-10-25"
+    },
+    "licence": {
+      "status": "verified",
+      "verified_on": "2026-10-25"
+    },
+    "free_tier": {
+      "status": "verified",
+      "verified_on": "2026-10-25"
+    },
+    "overall_notes": "Verified against official Google AI developer documentation."
+  }
+}
