@@ -1,6 +1,14 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI(title="TechPath Explorer API")
+
+
+class ProjectRequest(BaseModel):
+    problem_statement: str
+    skill_level: str = "Beginner"
+    budget: str = "Not specified"
+    hardware: str = "Not specified"
 
 
 @app.get("/health")
@@ -12,16 +20,11 @@ def health_check():
 
 
 @app.post("/analyze")
-def analyze_project(project: dict):
-    problem = project.get("problem_statement", "")
-    skill_level = project.get("skill_level", "Beginner")
-    budget = project.get("budget", "Not specified")
-    hardware = project.get("hardware", "Not specified")
-
+def analyze_project(project: ProjectRequest):
     return {
-        "problem_statement": problem,
-        "skill_level": skill_level,
-        "budget": budget,
-        "hardware": hardware,
+        "problem_statement": project.problem_statement,
+        "skill_level": project.skill_level,
+        "budget": project.budget,
+        "hardware": project.hardware,
         "message": "Project details received successfully"
     }
