@@ -229,7 +229,7 @@ Open your browser and navigate to:
 ## 👥 Team & Contributions
 
 * **Krutika Patole** ([@krutika08-stack](https://github.com/krutika08-stack)) — Project Lead & Full Stack Architecture
-* *Additional Contributors / Team Members* — [Add team member names and GitHub handles here]
+* *Additional Contributors / Team Members* — [NANDINI GAJBHIYE, MAHESH NAGARE, APOORVA BHAREKAR]
 
 ---
 
