@@ -66,6 +66,23 @@ def test_health_returns_expected_status_and_fields() -> None:
     assert body["message"] == "TechPath Explorer backend is running"
 
 
+def test_cors_allows_frontend_analysis_requests() -> None:
+    response = client.options(
+        "/analyze",
+        headers={
+            "Origin": "https://tech-path-explorer.vercel.app",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] in {
+        "*",
+        "https://tech-path-explorer.vercel.app",
+    }
+
+
 def test_technologies_returns_dataset_version_and_array() -> None:
     """Target-contract test; currently expected to fail until route exists."""
     response = client.get("/technologies")

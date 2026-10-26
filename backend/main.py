@@ -16,11 +16,12 @@ origins = [
     "http://localhost:5500",
     "http://127.0.0.1:3000",
     "http://localhost:3000",
+    "https://tech-path-explorer.vercel.app",
 ]
 
 origins.extend(
     origin.strip()
-    for origin in os.getenv("FRONTEND_ORIGINS", "").split(",")
+    for origin in os.getenv("FRONTEND_ORIGINS", "*").split(",")
     if origin.strip()
 )
 

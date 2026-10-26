@@ -1,4 +1,4 @@
-const DEPLOYED_BACKEND_URL = "https://techpath-explorer-backend.onrender.com";
+const DEPLOYED_BACKEND_URL = "https://techpath-explorer-1.onrender.com";
 
 const isLocalhost =
   window.location.hostname === "localhost" ||
@@ -407,4 +407,3 @@ document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
   updateCharCount();
 });
-

@@ -211,7 +211,7 @@ Open your browser and navigate to:
 | Component | Platform | Configuration File | Configured Target URL | Deployment Status |
 | :--- | :--- | :--- | :--- | :--- |
 | **Frontend** | Vercel | [vercel.json](vercel.json) | `https://tech-path-explorer.vercel.app` | Ready to build on push to `main` |
-| **Backend** | Render | [render.yaml](render.yaml) | `https://techpath-explorer-backend.onrender.com` | Blueprint ready for deployment |
+| **Backend** | Render | [render.yaml](render.yaml) | `https://techpath-explorer-1.onrender.com` | Blueprint ready for deployment |
 
 > [!NOTE]
 > Production deployment links are activated upon pushing `main` to GitHub and completing platform service instantiation.
