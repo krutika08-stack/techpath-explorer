@@ -1,4 +1,14 @@
-const API_URL = "http://127.0.0.1:8000";
+const DEPLOYED_BACKEND_URL = "https://techpath-explorer-backend.onrender.com";
+
+const isLocalhost =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+const API_URL =
+  window.API_BASE_URL ||
+  (isLocalhost
+    ? (window.location.hostname === "localhost" ? "http://localhost:8000" : "http://127.0.0.1:8000")
+    : DEPLOYED_BACKEND_URL);
 
 // --- VIEW NAVIGATION ---
 function showView(viewName) {
@@ -73,6 +83,17 @@ async function checkHealth() {
   const healthDot = healthBadge?.querySelector(".health-dot");
   const healthText = document.getElementById("healthText");
   const modelBadge = document.getElementById("modelConfigBadge");
+
+  // Make badge clickable to allow manual re-check
+  if (healthBadge && !healthBadge.hasClickListener) {
+    healthBadge.hasClickListener = true;
+    healthBadge.title = "Click to refresh backend status";
+    healthBadge.addEventListener("click", () => {
+      if (healthText) healthText.innerText = "Checking...";
+      if (healthDot) healthDot.className = "health-dot dot-pending";
+      checkHealth();
+    });
+  }
 
   try {
     const response = await fetch(`${API_URL}/health`);
@@ -166,6 +187,7 @@ function showFormAlert(message) {
   if (alertBox) {
     alertBox.innerText = message;
     alertBox.classList.remove("hidden");
+    alertBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 }
 
@@ -221,17 +243,27 @@ async function handleAnalyze(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      const errorMsg = typeof data.detail === "string"
-        ? data.detail
-        : JSON.stringify(data.detail || data);
-      throw new Error(errorMsg || `API request failed with status ${response.status}`);
+      let errorMsg = `API request failed with status ${response.status}`;
+      if (typeof data.detail === "string") {
+        errorMsg = data.detail;
+      } else if (Array.isArray(data.detail)) {
+        errorMsg = data.detail
+          .map((item) => {
+            const loc = Array.isArray(item.loc) ? item.loc.slice(1).join(" ") : "";
+            return `${loc ? loc + ": " : ""}${item.msg || JSON.stringify(item)}`;
+          })
+          .join("\n");
+      } else if (data.detail) {
+        errorMsg = JSON.stringify(data.detail);
+      }
+      throw new Error(errorMsg);
     }
 
     renderResults(data);
     showView("results");
   } catch (error) {
     showFormAlert(
-      `Could not complete analysis.\n\nDetails: ${error.message}\n\nPlease check that the FastAPI backend is running at ${API_URL}.`
+      `Could not complete analysis.\n\nDetails: ${error.message}\n\nPlease verify that the FastAPI backend is running at ${API_URL}.`
     );
   } finally {
     if (submitBtn) {
@@ -254,7 +286,7 @@ function renderResults(data) {
 
   // 2. Strict Honest Provenance Badge
   // Display AI-assisted status ONLY when data.ai_used === true.
-  // Do not name specific models unless confirmed by the backend response.
+  // Never falsely label a result as AI-generated if fallback was used.
   const badgeContainer = document.getElementById("provenanceBadgeContainer");
   const evidenceText = document.getElementById("evidenceText");
   const inferenceModeText = document.getElementById("res_inference_mode");
@@ -290,9 +322,14 @@ function renderResults(data) {
     const pricing = item.pricing || {};
     const priceModel = escapeHTML(pricing.model || "Not specified");
     const budgetTier = escapeHTML(pricing.budget_tier || "Not specified");
-    const startingPrice = pricing.paid_starting_from == null
-      ? "None specified"
-      : `${escapeHTML(pricing.paid_starting_from)} USD`;
+    let startingPrice = "None specified";
+    if (pricing.paid_starting_from != null) {
+      if (Number(pricing.paid_starting_from) === 0) {
+        startingPrice = "$0 (Free tier / Self-hosted)";
+      } else {
+        startingPrice = `$${escapeHTML(pricing.paid_starting_from)} USD`;
+      }
+    }
 
     // Warnings list
     const hasWarnings = Array.isArray(item.warnings) && item.warnings.length > 0;
@@ -370,3 +407,4 @@ document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
   updateCharCount();
 });
+
