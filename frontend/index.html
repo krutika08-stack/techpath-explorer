@@ -8,16 +8,28 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
+  <!-- HEADER / NAVBAR -->
   <header>
     <div class="logo-group" onclick="showView('landing')">
       <strong>TechPath <span class="highlight">Explorer</span></strong>
-      <span class="badge">MVP v1.0</span>
+      <span class="badge">v1.0</span>
     </div>
-    <div class="nav-actions">
+
+    <!-- Live Backend Connection & Config Indicator -->
+    <div class="status-container">
+      <div id="healthBadge" class="health-pill" title="Checking backend status...">
+        <span class="health-dot dot-pending"></span>
+        <span id="healthText">Connecting...</span>
+      </div>
+      <span id="modelConfigBadge" class="badge badge-neutral" title="API token configuration status">
+        Cloud Model: Checking...
+      </span>
+    </div>
+
+    <nav class="nav-actions">
       <button class="btn-sec" onclick="showView('landing')">Home</button>
-      <button class="btn" onclick="showView('analyzer')">Explore Your Project</button>
-    </div>
+      <button class="btn" onclick="showView('analyzer')">Explore Project &rarr;</button>
+    </nav>
   </header>
 
   <main class="container">
@@ -25,179 +37,167 @@
     <!-- VIEW 1: LANDING PAGE -->
     <section id="landingView">
       <div class="hero">
-        <span class="badge">Evidence-Backed Roadmap Engine</span>
+        <span class="badge badge-highlight">Evidence-Backed Decision Engine</span>
         <h1>Turn Your Project Idea Into a <span class="highlight">Technology Roadmap.</span></h1>
         <p class="hero-desc">
-          Stop guessing which framework, database, or AI model to use. Get constraint-aware tech recommendations and an explainable architecture plan.
+          Stop guessing which framework, database, or model to choose. Get constraint-aware technology recommendations based on your budget, hardware, and skill level.
         </p>
         <button class="btn btn-large" onclick="showView('analyzer')">Explore Your Project &rarr;</button>
       </div>
 
       <div class="grid-3">
         <div class="card">
-          <h4>⚙ Smart Tech Matching</h4>
-          <p class="text-muted">Curated selection of open-source tools matching your budget, hardware, and skills.</p>
+          <div class="card-icon">⚙️</div>
+          <h3>Constraint Matching</h3>
+          <p class="text-muted">
+            Filters and ranks tools based on real constraints: ₹0 budget, zero GPU availability, or strict cloud deployment requirements.
+          </p>
         </div>
         <div class="card">
-          <h4>🕸 Explainable Architecture</h4>
-          <p class="text-muted">Visual data-flow blueprint explaining why each component was chosen.</p>
+          <div class="card-icon">📋</div>
+          <h3>Explainable Shortlists</h3>
+          <p class="text-muted">
+            Understand why each technology was recommended, review practical advantages, and identify trade-offs before writing code.
+          </p>
         </div>
         <div class="card">
-          <h4>🎛 Constraint Validation</h4>
-          <p class="text-muted">Zero-GPU? ₹0 Budget? Filters out options that would crash on your machine.</p>
+          <div class="card-icon">🛡️</div>
+          <h3>Resilient Architecture</h3>
+          <p class="text-muted">
+            Engineered with a deterministic rule-based engine and LangGraph pipeline with fallback support when cloud AI is unconfigured.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 2: FORM -->
+    <!-- VIEW 2: ANALYZER FORM -->
     <section id="analyzerView" class="hidden form-container">
       <div class="form-header">
         <div>
-          <h3>Explore your project</h3>
-          <p class="text-muted">Define your problem statement and real constraints.</p>
+          <h2>Explore Your Project</h2>
+          <p class="text-muted">Specify your problem statement and real constraints to generate recommendations.</p>
         </div>
-        <button class="btn-sec" onclick="prefill()">Load Plant Disease Example</button>
       </div>
 
-      <form class="card" onsubmit="generate(event)">
-        <label class="label">1. Project problem statement</label>
-        <textarea id="p_prob" rows="3" required></textarea>
+      <!-- Quick-fill presets for beginner testing -->
+      <div class="presets-bar">
+        <span class="text-muted" style="font-size:0.8rem;">Quick Presets:</span>
+        <button type="button" class="btn-preset" onclick="loadPreset('chatbot')">💬 Chatbot Assistant</button>
+        <button type="button" class="btn-preset" onclick="loadPreset('api')">⚡ Web API Service</button>
+        <button type="button" class="btn-preset" onclick="loadPreset('edge')">📷 Edge Vision Prototype</button>
+      </div>
 
-        <div class="grid-2" style="margin-top:0.8rem;">
-          <div>
-            <label class="label">2. Skill level</label>
-            <select id="p_skill"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select>
+      <form id="analyzerForm" class="card" onsubmit="handleAnalyze(event)">
+        <!-- Field 1: Problem Statement -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="p_prob" class="label">1. Project Problem Statement <span class="required">*</span></label>
+            <span id="charCount" class="text-muted text-xs">0 / 2000</span>
           </div>
-          <div>
-            <label class="label">3. Budget</label>
-            <select id="p_budg"><option>Free / ₹0</option><option>Under ₹1,000</option><option>Flexible</option></select>
-          </div>
+          <textarea
+            id="p_prob"
+            rows="4"
+            required
+            minlength="5"
+            maxlength="2000"
+            placeholder="Describe what you are building, its main purpose, and any specific domain needs..."
+            oninput="updateCharCount()"
+          ></textarea>
         </div>
 
         <div class="grid-2">
-          <div>
-            <label class="label">4. Available hardware</label>
-            <select id="p_hard"><option>16 GB RAM, no GPU</option><option>GPU available</option><option>Cloud computing only</option></select>
+          <!-- Field 2: Skill Level -->
+          <div class="form-group">
+            <label for="p_skill" class="label">2. Team Skill Level</label>
+            <select id="p_skill">
+              <option value="Beginner" selected>Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
           </div>
-          <div>
-            <label class="label">5. Timeline</label>
-            <select id="p_time"><option>2–4 weeks</option><option>1 week</option><option>1–3 months</option></select>
+
+          <!-- Field 3: Budget -->
+          <div class="form-group">
+            <label for="p_budg" class="label">3. Project Budget</label>
+            <select id="p_budg">
+              <option value="Free / ₹0" selected>Free / ₹0</option>
+              <option value="Under ₹1,000">Under ₹1,000</option>
+              <option value="Flexible">Flexible</option>
+            </select>
           </div>
         </div>
 
-        <div style="margin-bottom:0.8rem;">
-          <label class="label">6. Expected outcome</label>
-          <select id="p_out"><option>Working prototype</option><option>Learning project</option><option>Deployable product</option></select>
+        <!-- Field 4: Hardware -->
+        <div class="form-group">
+          <label for="p_hard" class="label">4. Available Hardware & Hosting</label>
+          <select id="p_hard">
+            <option value="Cloud computing only" selected>Cloud computing only</option>
+            <option value="16 GB RAM, no GPU">16 GB RAM, no GPU</option>
+            <option value="GPU available">GPU available</option>
+          </select>
         </div>
 
-        <button type="submit" class="btn btn-full">
-          ✨ Generate Technology Roadmap &rarr;
+        <!-- Inline Form Alert Banner -->
+        <div id="formAlert" class="alert-box alert-error hidden"></div>
+
+        <button type="submit" id="submitBtn" class="btn btn-full">
+          <span>✨ Analyze & Generate Roadmap &rarr;</span>
         </button>
       </form>
+
+      <!-- Loading State Indicator -->
+      <div id="loadingState" class="card loading-card hidden">
+        <div class="spinner"></div>
+        <h4>Analyzing your requirements...</h4>
+        <p class="text-muted">Evaluating constraints against dataset and executing LangGraph pipeline.</p>
+      </div>
     </section>
 
-    <!-- VIEW 3: RESULTS REPORT -->
+    <!-- VIEW 3: RESULTS DASHBOARD -->
     <section id="resultsView" class="hidden">
       <div class="results-header">
         <div>
           <button class="btn-sec" onclick="showView('analyzer')">&larr; Edit Inputs</button>
-          <h2>Project Roadmap & Architecture Report</h2>
+          <h2 style="margin-top:0.6rem;">Technology Roadmap & Assessment Report</h2>
         </div>
-        <span class="badge badge-amber">Proposed Architecture</span>
+        <!-- Dynamic Provenance Badge populated based on data.ai_used -->
+        <div id="provenanceBadgeContainer"></div>
       </div>
 
+      <!-- Section A: Project Parameters Evaluated -->
       <div class="card">
-        <small class="section-title text-indigo">A. Project Understanding</small>
-        <p id="out_prob" class="project-statement"></p>
+        <small class="section-title text-indigo">A. Project Parameters Evaluated</small>
+        <p id="res_problem" class="project-statement"></p>
         <div class="tags-row">
-          <span>Skill: <b id="out_skill"></b></span>
-          <span>Budget: <b id="out_budg"></b></span>
-          <span>Hardware: <b id="out_hard"></b></span>
-          <span>Outcome: <b id="out_outcome"></b></span>
+          <span>Skill Level: <b id="res_skill">-</b></span>
+          <span>Budget: <b id="res_budget">-</b></span>
+          <span>Hardware: <b id="res_hardware">-</b></span>
         </div>
       </div>
 
-      <small class="section-title text-green">B. Recommended Technology Shortlist</small>
-      <div class="grid-3" style="margin-top:0.5rem;">
-        <div class="card">
-          <div class="card-top"><small class="tech-cat">VISION MODEL</small><span class="badge badge-green">FREE</span></div>
-          <h4>MobileNetV3 (TorchVision)</h4>
-          <p class="text-muted">Under 180MB RAM usage. Fast inference directly on your laptop CPU.</p>
-        </div>
-        <div class="card">
-          <div class="card-top"><small class="tech-cat">BACKEND API</small><span class="badge badge-green">FREE</span></div>
-          <h4>FastAPI (Render)</h4>
-          <p class="text-muted">Automatic Swagger docs and native file-upload streaming.</p>
-        </div>
-        <div class="card">
-          <div class="card-top"><small class="tech-cat">FRONTEND UI</small><span class="badge badge-green">FREE</span></div>
-          <h4>Streamlit</h4>
-          <p class="text-muted">Pure Python interface. 35 lines of code for camera uploads.</p>
+      <!-- Section B: Recommendation Shortlist -->
+      <div class="section-intro">
+        <small class="section-title text-green">B. Recommended Technology Shortlist</small>
+        <p class="text-muted" style="margin-top:0.2rem;">
+          Ranked options from the dataset matching your requirements. Scores reflect heuristic constraint alignment.
+        </p>
+      </div>
+
+      <!-- Dynamic Cards Container -->
+      <div id="recommendationsList" class="recommendations-container"></div>
+
+      <!-- Section C: Provenance & Evidence Details -->
+      <div class="card" id="evidenceSection">
+        <small class="section-title text-amber">C. Provenance & Evidence Verification</small>
+        <p id="evidenceText" style="margin-top:0.5rem; font-size:0.85rem; line-height:1.6;"></p>
+        <div class="metadata-footer">
+          <span>Dataset Version: <b id="res_dataset_version">unknown</b></span>
+          <span>Inference Method: <b id="res_inference_mode">Heuristic Fallback</b></span>
         </div>
       </div>
 
-      <div class="card">
-        <small class="section-title text-indigo">C. Trade-Off Comparison Under Your Constraints</small>
-        <table class="comparison-table">
-          <thead>
-            <tr><th>Option</th><th>Why Chosen</th><th>Why Alternative Rejected</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="table-bold">MobileNetV3</td>
-              <td class="text-green">Fits comfortably under 16GB non-GPU laptop constraint with &lt; 30ms latency.</td>
-              <td class="text-muted">ResNet-50 / YOLOv8: Higher accuracy, but exceeds 512MB RAM free-tier limits.</td>
-            </tr>
-            <tr>
-              <td class="table-bold">Streamlit</td>
-              <td class="text-green">Matches 'Beginner' level. Pure Python with zero JavaScript build config.</td>
-              <td class="text-muted">Next.js + Tailwind: Too complex for a 2-4 week timeline.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <small class="section-title text-green">D. Proposed Architecture</small>
-        <div class="flowchart">
-          <div class="flow-node"><strong>Streamlit Web</strong><br><small class="text-muted">Client UI</small></div>
-          <span>&rarr;</span>
-          <div class="flow-node flow-node-indigo"><strong>FastAPI Gateway</strong><br><small class="text-indigo">Payload Validator</small></div>
-          <span>&rarr;</span>
-          <div class="flow-node flow-node-green"><strong>MobileNetV3</strong><br><small class="text-green">PyTorch CPU Run</small></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-top">
-          <small class="section-title text-indigo">Feature 4: Prompting Guidance for AI Assistant</small>
-          <button class="btn-sec" onclick="copyPrompt()" id="copyBtn">Copy Prompt</button>
-        </div>
-        <pre id="promptText">You are an agronomy specialist and edge computing assistant.
-Context:
-- Target user: Smallholder farmer with leaf photo.
-- Model classification: [LEAF_DISEASE_LABEL] with [CONFIDENCE]% confidence.
-Task:
-1. Translate the label into plain non-academic terms.
-2. Provide two immediate organic remedies using local materials.
-Constraint: Keep response under 100 words.</pre>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <small class="section-title text-indigo">E. Implementation Roadmap</small>
-          <ul class="roadmap-list">
-            <li><strong>Phase 1:</strong> Benchmark model on local CPU with sample images.</li>
-            <li><strong>Phase 2:</strong> Build FastAPI POST <code>/predict</code> endpoint.</li>
-            <li><strong>Phase 3:</strong> Build Streamlit UI and deploy backend to Render.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <small class="section-title text-amber">F. Evidence & Limitations</small>
-          <p class="text-muted" style="margin-top:0.5rem; line-height:1.6;">
-            Render free-tier containers idle after 15 minutes of inactivity (50s cold-start). Send an automated health-check request before live demos.
-          </p>
-        </div>
+      <div class="results-actions">
+        <button class="btn" onclick="showView('analyzer')">Analyze Another Idea &rarr;</button>
       </div>
     </section>
 

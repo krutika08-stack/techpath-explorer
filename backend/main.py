@@ -223,7 +223,7 @@ def generate_ai_reasons(state: WorkflowState) -> dict:
         model = ChatOpenAI(
             model=os.getenv(
                 "HF_MODEL",
-                "openai/gpt-oss-120b:cheapest",
+                "google/gemma-4-E2B-it",
             ),
             api_key=token,
             base_url="https://router.huggingface.co/v1",
@@ -304,7 +304,9 @@ Do not change scores or recommend technologies outside the list.
         return result
 
     except Exception as exc:
-        print(f"Hosted AI unavailable; using fallback: {exc}")
+        print("Hosted AI error type:", type(exc).__name__)
+        print("Hosted AI error details:", getattr(exc, "body", None))
+
         return generate_fallback_reasons(state)
 
 
@@ -369,7 +371,7 @@ def analyze_project(project: ProjectRequest):
     except RuntimeError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     except Exception as exc:
-        print(f"Analysis error: {exc}")
+        print(f"Analysis error: {exc!r}")
         raise HTTPException(
             status_code=500,
             detail="Analysis failed. Check backend logs.",

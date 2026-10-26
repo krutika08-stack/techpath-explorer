@@ -1,26 +1,20 @@
 const API_URL = "http://127.0.0.1:8000";
 
+// --- VIEW NAVIGATION ---
 function showView(viewName) {
   ["landingView", "analyzerView", "resultsView"].forEach((id) => {
-    document.getElementById(id).classList.add("hidden");
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
   });
 
   const target = document.getElementById(viewName + "View");
-  if (target) target.classList.remove("hidden");
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (target) {
+    target.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
 
-function prefill() {
-  document.getElementById("p_prob").value =
-    "Build a chatbot for summarising text.";
-  document.getElementById("p_skill").value = "Beginner";
-  document.getElementById("p_budg").value = "Free / ₹0";
-  document.getElementById("p_hard").value = "Cloud computing only";
-  document.getElementById("p_time").value = "1 week";
-  document.getElementById("p_out").value = "Working prototype";
-}
-
+// --- SAFE RENDERING UTILITIES (XSS Prevention) ---
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
     "&": "&amp;",
@@ -31,162 +25,183 @@ function escapeHTML(value) {
   })[character]);
 }
 
-function renderList(items) {
+function isValidHttpUrl(string) {
+  try {
+    const url = new URL(string);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function renderList(items, customClass = "") {
   if (!Array.isArray(items) || items.length === 0) {
-    return "<p class='text-muted'>No details provided.</p>";
+    return "<p class='text-muted text-xs'>None specified.</p>";
   }
 
-  return `<ul class="roadmap-list">${items
+  const listItems = items
     .map((item) => `<li>${escapeHTML(item)}</li>`)
-    .join("")}</ul>`;
+    .join("");
+
+  return `<ul class="clean-list ${customClass}">${listItems}</ul>`;
 }
 
 function renderSources(sources) {
   if (!Array.isArray(sources) || sources.length === 0) {
-    return "<p class='text-muted'>No sources provided.</p>";
+    return "<p class='text-muted text-xs'>No external sources listed.</p>";
   }
 
-  return `<ul class="roadmap-list">${sources.map((source) => {
-    const url = String(source.url || "");
-    const safeURL = /^https?:\/\/[^\s"'<>]+$/i.test(url);
+  const listItems = sources
+    .map((source) => {
+      const rawUrl = String(source.url || "").trim();
+      const label = escapeHTML(source.label || rawUrl || "Source Documentation");
 
-    return `<li>${safeURL
-        ? `<a href="${escapeHTML(url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(source.label || url)}</a>`
-        : escapeHTML(source.label || "Source unavailable")
-      }</li>`;
-  }).join("")}</ul>`;
+      if (isValidHttpUrl(rawUrl)) {
+        const safeUrl = escapeHTML(rawUrl);
+        return `<li><a href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+      }
+      return `<li>${label} <span class="text-muted">(Link unavailable)</span></li>`;
+    })
+    .join("");
+
+  return `<ul class="clean-list sources-list">${listItems}</ul>`;
 }
 
-function renderRecommendations(data) {
-  const recommendations = data.recommendations || [];
+// --- HEALTH CHECK ON PAGE LOAD ---
+async function checkHealth() {
+  const healthBadge = document.getElementById("healthBadge");
+  const healthDot = healthBadge?.querySelector(".health-dot");
+  const healthText = document.getElementById("healthText");
+  const modelBadge = document.getElementById("modelConfigBadge");
 
-  const cards = recommendations.map((tech, index) => `
-    <article class="card">
-      <div class="card-top">
-        <small class="tech-cat">${escapeHTML(tech.category || "TECHNOLOGY")}</small>
-        <span class="badge ${index === 0 ? "badge-green" : ""}">
-          Score: ${escapeHTML(tech.score)}
-        </span>
-      </div>
-
-      <h3>${escapeHTML(tech.name)}</h3>
-      <p class="text-muted">Technology ID: ${escapeHTML(tech.id)}</p>
-
-      <h4 style="margin-top:0.8rem;">Why it was recommended</h4>
-      ${renderList(tech.reasons)}
-
-      ${tech.warnings?.length ? `
-        <h4 style="margin-top:0.8rem;" class="text-amber">Warnings</h4>
-        ${renderList(tech.warnings)}
-      ` : ""}
-
-      <h4 style="margin-top:0.8rem;" class="text-green">Advantages</h4>
-      ${renderList(tech.advantages)}
-
-      <h4 style="margin-top:0.8rem;">Limitations</h4>
-      ${renderList(tech.limitations)}
-
-      <h4 style="margin-top:0.8rem;">Pricing information</h4>
-      <p class="text-muted">
-        Model: ${escapeHTML(tech.pricing?.model || "Not specified")}<br>
-        Budget tier: ${escapeHTML(tech.pricing?.budget_tier || "Not specified")}<br>
-        Starting price: ${tech.pricing?.paid_starting_from == null
-      ? "Not specified"
-      : escapeHTML(tech.pricing.paid_starting_from) + " USD"
+  try {
+    const response = await fetch(`${API_URL}/health`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
-      </p>
 
-      <h4 style="margin-top:0.8rem;">Sources</h4>
-      ${renderSources(tech.sources)}
+    const data = await response.json();
 
-      <p class="text-muted" style="margin-top:0.8rem;">
-        Verification: ${escapeHTML(tech.verification?.overall_notes || "Check source details before use.")}
-      </p>
-    </article>
-  `).join("");
+    if (data.status === "ok") {
+      if (healthDot) {
+        healthDot.className = "health-dot dot-ok";
+      }
+      if (healthText) {
+        const count = data.technology_count != null ? `${data.technology_count} tech entries` : "Active";
+        healthText.innerText = `Backend Connected (${count})`;
+      }
 
-  const resultsView = document.getElementById("resultsView");
-
-  resultsView.innerHTML = `
-    <div class="results-header">
-      <div>
-        <button class="btn-sec" onclick="showView('analyzer')">
-          &larr; Edit Inputs
-        </button>
-        <h2 style="margin-top:0.8rem;">Project Roadmap & Technology Report</h2>
-      </div>
-      <span class="badge badge-amber">Rule-based MVP</span>
-    </div>
-
-    <div class="card">
-      <small class="section-title text-indigo">A. Project Understanding</small>
-      <p class="project-statement">${escapeHTML(data.request?.problem_statement)}</p>
-
-      <div class="tags-row">
-        <span>Skill: <b>${escapeHTML(data.request?.skill_level)}</b></span>
-        <span>Budget: <b>${escapeHTML(data.request?.budget)}</b></span>
-        <span>Hardware: <b>${escapeHTML(data.request?.hardware)}</b></span>
-        <span>Timeline: <b>${escapeHTML(document.getElementById("p_time").value)}</b></span>
-        <span>Expected outcome: <b>${escapeHTML(document.getElementById("p_out").value)}</b></span>
-      </div>
-    </div>
-
-    <small class="section-title text-green">B. Recommended Technology Shortlist</small>
-    <p class="text-muted" style="margin:0.5rem 0 1rem;">
-      ${recommendations.length} technologies returned. Scores are heuristic,
-      not probabilities.
-    </p>
-
-    ${cards || `<div class="card">No recommendations were returned.</div>`}
-
-    <div class="card">
-      <small class="section-title text-indigo">C. Architecture & Next Steps</small>
-      <p style="margin-top:0.6rem;">
-        The API currently provides technology recommendations, reasons,
-        limitations, pricing information, and sources. A project-specific
-        architecture diagram and implementation roadmap are not yet generated
-        by the backend.
-      </p>
-      <p class="text-muted" style="margin-top:0.6rem;">
-        Next: compare the recommended options, choose the components that fit
-        your constraints, and then build the project architecture.
-      </p>
-    </div>
-
-    <div class="card">
-      <small class="section-title text-amber">D. Evidence & Limitations</small>
-      <p class="text-muted" style="margin-top:0.6rem;">
-        Recommendations use preliminary rule-based matching, not an AI model.
-        Review source links, current prices, licensing, hardware requirements,
-        and service restrictions before making a final decision.
-      </p>
-      <p class="text-muted" style="margin-top:0.6rem;">
-        Dataset version: ${escapeHTML(data.dataset_version || "Not specified")}
-      </p>
-    </div>
-
-    <button class="btn" onclick="showView('analyzer')">Analyze Another Project</button>
-  `;
-
-  showView("results");
+      // Check model configuration status (token configured vs unset)
+      // Note: model_configured is configuration status only, not proof of successful inference
+      if (modelBadge) {
+        if (data.model_configured) {
+          modelBadge.className = "badge badge-ai";
+          modelBadge.innerText = "Cloud Model: Token Configured";
+          modelBadge.title = "HF_TOKEN environment variable is set. Inference will be attempted during analysis.";
+        } else {
+          modelBadge.className = "badge badge-neutral";
+          modelBadge.innerText = "Cloud Model: Unconfigured (Fallback Ready)";
+          modelBadge.title = "HF_TOKEN is not set. Deterministic rule-based fallback will be used.";
+        }
+      }
+    } else {
+      // Degraded state (e.g. dataset failed to load)
+      if (healthDot) healthDot.className = "health-dot dot-warn";
+      if (healthText) healthText.innerText = "Backend Degraded (Dataset issue)";
+    }
+  } catch (error) {
+    if (healthDot) healthDot.className = "health-dot dot-err";
+    if (healthText) healthText.innerText = "Backend Offline (Port 8000)";
+    if (modelBadge) {
+      modelBadge.className = "badge badge-neutral";
+      modelBadge.innerText = "Cloud Model: Unknown";
+    }
+  }
 }
 
-async function generate(event) {
+// --- PRESET LOADER (Beginner Friendly Testing) ---
+function loadPreset(type) {
+  const probInput = document.getElementById("p_prob");
+  const skillInput = document.getElementById("p_skill");
+  const budgInput = document.getElementById("p_budg");
+  const hardInput = document.getElementById("p_hard");
+
+  if (type === "chatbot") {
+    probInput.value = "Build an AI chatbot for customer support, document question answering, and text summarization.";
+    skillInput.value = "Beginner";
+    budgInput.value = "Free / ₹0";
+    hardInput.value = "Cloud computing only";
+  } else if (type === "api") {
+    probInput.value = "Create a scalable web API with background data processing, secure auth, and relational storage.";
+    skillInput.value = "Intermediate";
+    budgInput.value = "Flexible";
+    hardInput.value = "Cloud computing only";
+  } else if (type === "edge") {
+    probInput.value = "Detect plant leaf diseases locally on edge devices with lightweight computer vision and no external internet dependencies.";
+    skillInput.value = "Beginner";
+    budgInput.value = "Free / ₹0";
+    hardInput.value = "16 GB RAM, no GPU";
+  }
+
+  updateCharCount();
+  hideFormAlert();
+}
+
+function updateCharCount() {
+  const textarea = document.getElementById("p_prob");
+  const counter = document.getElementById("charCount");
+  if (textarea && counter) {
+    const len = textarea.value.trim().length;
+    counter.innerText = `${len} / 2000`;
+    if (len > 0 && len < 5) {
+      counter.style.color = "var(--amber)";
+    } else {
+      counter.style.color = "var(--muted)";
+    }
+  }
+}
+
+function showFormAlert(message) {
+  const alertBox = document.getElementById("formAlert");
+  if (alertBox) {
+    alertBox.innerText = message;
+    alertBox.classList.remove("hidden");
+  }
+}
+
+function hideFormAlert() {
+  const alertBox = document.getElementById("formAlert");
+  if (alertBox) {
+    alertBox.innerText = "";
+    alertBox.classList.add("hidden");
+  }
+}
+
+// --- FORM SUBMISSION & ANALYSIS ---
+async function handleAnalyze(event) {
   event.preventDefault();
+  hideFormAlert();
 
   const problemStatement = document.getElementById("p_prob").value.trim();
+  const skillLevel = document.getElementById("p_skill").value;
+  const budget = document.getElementById("p_budg").value;
+  const hardware = document.getElementById("p_hard").value;
 
   if (problemStatement.length < 5) {
-    alert("Please enter a project statement of at least 5 characters.");
+    showFormAlert("Please provide a problem statement of at least 5 characters.");
     return;
   }
 
-  const submitButton = event.submitter;
-  const originalText = submitButton?.innerText;
+  const submitBtn = document.getElementById("submitBtn");
+  const loadingState = document.getElementById("loadingState");
 
-  if (submitButton) {
-    submitButton.disabled = true;
-    submitButton.innerText = "Analyzing...";
+  // Toggle loading state
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Analyzing Constraints...";
+  }
+  if (loadingState) {
+    loadingState.classList.remove("hidden");
   }
 
   try {
@@ -197,44 +212,161 @@ async function generate(event) {
       },
       body: JSON.stringify({
         problem_statement: problemStatement,
-        skill_level: document.getElementById("p_skill").value,
-        budget: document.getElementById("p_budg").value,
-        hardware: document.getElementById("p_hard").value
+        skill_level: skillLevel,
+        budget: budget,
+        hardware: hardware
       })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      const detail = typeof data.detail === "string"
+      const errorMsg = typeof data.detail === "string"
         ? data.detail
         : JSON.stringify(data.detail || data);
-
-      throw new Error(detail || `API request failed (${response.status})`);
+      throw new Error(errorMsg || `API request failed with status ${response.status}`);
     }
 
-    renderRecommendations(data);
+    renderResults(data);
+    showView("results");
   } catch (error) {
-    alert(
-      "Could not get recommendations from the backend.\n\n" +
-      error.message +
-      "\n\nCheck that FastAPI is running at " + API_URL
+    showFormAlert(
+      `Could not complete analysis.\n\nDetails: ${error.message}\n\nPlease check that the FastAPI backend is running at ${API_URL}.`
     );
   } finally {
-    if (submitButton) {
-      submitButton.disabled = false;
-      submitButton.innerText = originalText || "Generate Technology Roadmap";
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "✨ Analyze & Generate Roadmap →";
+    }
+    if (loadingState) {
+      loadingState.classList.add("hidden");
     }
   }
 }
 
-async function copyPrompt() {
-  const text = document.getElementById("promptText")?.innerText || "";
+// --- RENDER RESULTS WITH HONEST PROVENANCE ---
+function renderResults(data) {
+  // 1. Populate Request Summary
+  document.getElementById("res_problem").innerText = data.request?.problem_statement || "Not specified";
+  document.getElementById("res_skill").innerText = data.request?.skill_level || "Not specified";
+  document.getElementById("res_budget").innerText = data.request?.budget || "Not specified";
+  document.getElementById("res_hardware").innerText = data.request?.hardware || "Not specified";
 
-  try {
-    await navigator.clipboard.writeText(text);
-    alert("Prompt copied.");
-  } catch {
-    alert("Clipboard access is unavailable in this browser.");
+  // 2. Strict Honest Provenance Badge
+  // Display AI-assisted status ONLY when data.ai_used === true.
+  // Do not name specific models unless confirmed by the backend response.
+  const badgeContainer = document.getElementById("provenanceBadgeContainer");
+  const evidenceText = document.getElementById("evidenceText");
+  const inferenceModeText = document.getElementById("res_inference_mode");
+
+  if (data.ai_used === true) {
+    badgeContainer.innerHTML = '<span class="badge badge-ai">✨ AI-Assisted</span>';
+    evidenceText.innerText =
+      "Match reasons were generated using cloud-hosted AI inference based on the candidate technologies and your specific constraints. Verify official docs and pricing before architectural commitment.";
+    inferenceModeText.innerText = "Cloud AI Augmented";
+  } else {
+    badgeContainer.innerHTML = '<span class="badge badge-fallback">⚙️ Heuristic Matching (Rule-Based Fallback)</span>';
+    evidenceText.innerText =
+      "Recommendations and reasons were determined using deterministic constraint matching and keyword overlap from the local dataset. Cloud AI inference was not utilized.";
+    inferenceModeText.innerText = "Deterministic Heuristic Fallback";
   }
+
+  // 3. Dataset version display
+  document.getElementById("res_dataset_version").innerText = escapeHTML(data.dataset_version || "unknown");
+
+  // 4. Render Recommendation Cards
+  const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+  const container = document.getElementById("recommendationsList");
+
+  if (recommendations.length === 0) {
+    container.innerHTML = '<div class="card"><p class="text-muted">No matching technologies returned by the backend.</p></div>';
+    return;
+  }
+
+  container.innerHTML = recommendations.map((item, index) => {
+    const scoreVal = typeof item.score === "number" ? Math.round(item.score) : escapeHTML(item.score);
+
+    // Format pricing details safely
+    const pricing = item.pricing || {};
+    const priceModel = escapeHTML(pricing.model || "Not specified");
+    const budgetTier = escapeHTML(pricing.budget_tier || "Not specified");
+    const startingPrice = pricing.paid_starting_from == null
+      ? "None specified"
+      : `${escapeHTML(pricing.paid_starting_from)} USD`;
+
+    // Warnings list
+    const hasWarnings = Array.isArray(item.warnings) && item.warnings.length > 0;
+    const warningsHTML = hasWarnings
+      ? `
+        <div class="warnings-box">
+          <h4 class="text-amber">⚠️ Verification & Constraint Warnings</h4>
+          ${renderList(item.warnings)}
+        </div>
+      `
+      : "";
+
+    return `
+      <article class="rec-card">
+        <div class="card-top">
+          <span class="tech-cat">${escapeHTML(item.category || "Technology")}</span>
+          <span class="badge ${index === 0 ? "badge-score" : "badge-neutral"}">
+            Match Score: ${scoreVal}%
+          </span>
+        </div>
+
+        <div class="rec-title-row">
+          <h3>${index + 1}. ${escapeHTML(item.name || "Unknown Tool")}</h3>
+          <span class="rec-id">ID: ${escapeHTML(item.id || "")}</span>
+        </div>
+
+        <!-- Reasons -->
+        <div class="detail-block">
+          <h4 class="text-indigo">Why It Matched</h4>
+          ${renderList(item.reasons)}
+        </div>
+
+        <!-- Warnings -->
+        ${warningsHTML}
+
+        <!-- Advantages -->
+        <div class="detail-block">
+          <h4 class="text-green">Key Advantages</h4>
+          ${renderList(item.advantages, "advantages-list")}
+        </div>
+
+        <!-- Limitations -->
+        <div class="detail-block">
+          <h4>Limitations to Consider</h4>
+          ${renderList(item.limitations)}
+        </div>
+
+        <!-- Pricing Specs -->
+        <div class="detail-block">
+          <h4>Pricing & Resource Tier</h4>
+          <div class="pricing-box">
+            <span>Model: <b>${priceModel}</b></span>
+            <span>Tier: <b>${budgetTier}</b></span>
+            <span>Starting Price: <b>${startingPrice}</b></span>
+          </div>
+        </div>
+
+        <!-- Sources -->
+        <div class="detail-block">
+          <h4>Verified Documentation & Sources</h4>
+          ${renderSources(item.sources)}
+        </div>
+
+        <!-- Verification note -->
+        <div class="verification-note">
+          Dataset Note: ${escapeHTML(item.verification?.overall_notes || "Check source details before use.")}
+        </div>
+      </article>
+    `;
+  }).join("");
 }
+
+// --- INITIALIZATION ---
+document.addEventListener("DOMContentLoaded", () => {
+  checkHealth();
+  updateCharCount();
+});
